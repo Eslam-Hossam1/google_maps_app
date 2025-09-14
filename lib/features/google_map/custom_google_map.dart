@@ -18,11 +18,14 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         31.04093837052159,
         31.379407510024834,
       ),
+      zoom: 10,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(initialCameraPosition: cameraPosition);
+    return GoogleMap(
+      initialCameraPosition: cameraPosition,
+    );
   }
 }
