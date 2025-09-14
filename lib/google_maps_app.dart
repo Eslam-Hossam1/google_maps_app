@@ -8,7 +8,7 @@ class GoogleMapsApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: GoogleMapsView(),
+      home: GoogleMapView(),
     );
   }
 }
