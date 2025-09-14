@@ -38,28 +38,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GoogleMap(
-          //  cameraTargetBounds: cameraTargetBounds,
-          onMapCreated: (controller) => googleMapController = controller,
-          initialCameraPosition: cameraPosition,
-        ),
-        Positioned(
-          bottom: 36,
-          left: 50,
-          right: 50,
-          child: ElevatedButton(
-            onPressed: () {
-                googleMapController.animateCamera(
-                  CameraUpdate.newLatLng(
-                      LatLng(30.05711214641764, 31.303165496389212)),
-               );
-            },
-            child: Text('change postion'),
-          ),
-        ),
-      ],
+    return GoogleMap(
+      mapType: MapType.satellite,
+      initialCameraPosition: cameraPosition,
     );
   }
 }
