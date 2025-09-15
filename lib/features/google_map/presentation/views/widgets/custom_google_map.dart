@@ -36,26 +36,11 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     setState(() {});
   }
 
-  Future<Uint8List> modifyImageWidth(String image, int width) async {
-    var imageBytes = await rootBundle.load(image);
-    var imageCodec = await ui.instantiateImageCodec(
-      imageBytes.buffer.asUint8List(),
-      targetWidth: width,
-    );
-    var imageFrame = await imageCodec.getNextFrame();
-    var modifiedImageBytes = await imageFrame.image.toByteData(
-      format: ui.ImageByteFormat.png,
-    );
-    var modifiedImage = modifiedImageBytes!.buffer.asUint8List();
-    return modifiedImage;
-  }
-
   initMarkers() async {
-    final modifiedImage = await modifyImageWidth(
+    BitmapDescriptor icon = await BitmapDescriptor.asset(
+      ImageConfiguration(),
       'assets/images/flag.png',
-      50,
     );
-    BitmapDescriptor icon = BitmapDescriptor.bytes(modifiedImage);
     Set<Marker> newMarkers = places.map((place) {
       return Marker(
         icon: icon,
