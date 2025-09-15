@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_app/features/google_map/custom_google_map.dart';
+import 'package:google_maps_app/features/google_map/presentation/views/widgets/custom_google_map.dart';
 
 class GoogleMapView extends StatelessWidget {
   const GoogleMapView({

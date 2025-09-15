@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_app/features/google_map/data/models/place_model.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'dart:ui' as ui;
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
@@ -13,7 +15,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition cameraPosition;
   late GoogleMapController googleMapController;
   String? nightMapStyle;
-
+  Set<Marker> markers = {};
   @override
   void initState() {
     super.initState();
@@ -24,13 +26,33 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       ),
       zoom: 14,
     );
-
+    initMarkers();
     loadGoogleMapStyle();
   }
 
   Future<void> loadGoogleMapStyle() async {
     nightMapStyle = await rootBundle
         .loadString('assets/google_maps_styles/night_map_style.json');
+    setState(() {});
+  }
+
+  initMarkers() async {
+    BitmapDescriptor icon = await BitmapDescriptor.asset(
+      ImageConfiguration(),
+      'assets/images/flag.png',
+    );
+    Set<Marker> newMarkers = places.map((place) {
+      return Marker(
+        icon: icon,
+        markerId: MarkerId(place.id),
+        position: place.position,
+        infoWindow: InfoWindow(
+          title: place.name,
+        ),
+      );
+    }).toSet();
+
+    markers.addAll(newMarkers);
     setState(() {});
   }
 
@@ -43,6 +65,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      markers: markers,
       style: nightMapStyle,
       initialCameraPosition: cameraPosition,
     );
