@@ -35,9 +35,11 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     setState(() {});
   }
 
-  initMarkers() {
+  initMarkers() async{
+    BitmapDescriptor icon =await BitmapDescriptor.asset(ImageConfiguration(), 'assets/images/flag.png');
     Set<Marker> newMarkers = places.map((place) {
       return Marker(
+        icon: icon,
         markerId: MarkerId(place.id),
         position: place.position,
         infoWindow: InfoWindow(
@@ -47,6 +49,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     }).toSet();
 
     markers.addAll(newMarkers);
+    setState(() {
+      
+    });
   }
 
   @override
