@@ -13,7 +13,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition cameraPosition;
   late GoogleMapController googleMapController;
   String? nightMapStyle;
-
+  Set<Marker> markers = {};
   @override
   void initState() {
     super.initState();
@@ -24,7 +24,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       ),
       zoom: 14,
     );
-
+    initMarkers();
     loadGoogleMapStyle();
   }
 
@@ -32,6 +32,12 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     nightMapStyle = await rootBundle
         .loadString('assets/google_maps_styles/night_map_style.json');
     setState(() {});
+  }
+
+  initMarkers() {
+    Marker marker =
+        Marker(markerId: MarkerId('1'), position: LatLng(31.053715, 31.407414));
+    markers.add(marker);
   }
 
   @override
@@ -43,6 +49,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      markers: markers,
       style: nightMapStyle,
       initialCameraPosition: cameraPosition,
     );
