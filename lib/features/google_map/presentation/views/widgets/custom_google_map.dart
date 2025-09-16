@@ -40,7 +40,10 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
 
   initPolyLines() {
     Polyline polyline = Polyline(
-
+      startCap: Cap.roundCap,
+      endCap: Cap.roundCap,
+      color: Colors.red,
+      width: 10,
       polylineId: PolylineId('1'),
       points: [
         LatLng(30.97674028818873, 31.174625298689165),
