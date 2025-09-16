@@ -16,7 +16,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late GoogleMapController googleMapController;
   String? nightMapStyle;
   Set<Marker> markers = {};
-  Set<Polyline> polylines = {};
+  Set<Polygon> polygons = {};
   @override
   void initState() {
     super.initState();
@@ -39,19 +39,24 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
 
   initPolyLines() {
-    Polyline polyline = Polyline(
-      geodesic: true,
-      startCap: Cap.roundCap,
-      endCap: Cap.roundCap,
-      color: Colors.red,
-      width: 10,
-      polylineId: PolylineId('1'),
+    //polygon is any 2-d shape
+    Polygon egyptPolygon = Polygon(
+      polygonId: PolygonId('1'),
       points: [
-        LatLng(-32.02961945494075, 21.048408992101184),
-        LatLng(72.27010316621475, -40.35172105700681),
+        LatLng(31.59873996440776, 25.091298804499562),
+        LatLng(31.56165580486618, 30.924414292410454),
+        LatLng(31.264452333541957, 34.22404230723502),
+        LatLng(29.54090335472602, 34.886879763893035),
+        LatLng(28.104223304617385, 34.550115425233166),
+        LatLng(22.2916725000781, 37.68348796754582),
+        LatLng(22.006883023279123, 38.1081038728126),
+        LatLng(22.006883023279123, 25.003578520613683),
       ],
+      fillColor: Colors.pink.withAlpha(50),
+      strokeColor: Colors.cyan,
+      strokeWidth: 5,
     );
-    polylines.add(polyline);
+    polygons.add(egyptPolygon);
   }
 
   initMarkers() async {
@@ -83,7 +88,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
-      polylines: polylines,
+      polygons: polygons,
       markers: markers,
       style: nightMapStyle,
       initialCameraPosition: cameraPosition,
