@@ -25,7 +25,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         31.04093837052159,
         31.379407510024834,
       ),
-      zoom: 10,
+      zoom: 0,
     );
     initMarkers();
     initPolyLines();
@@ -40,15 +40,15 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
 
   initPolyLines() {
     Polyline polyline = Polyline(
+      geodesic: true,
       startCap: Cap.roundCap,
       endCap: Cap.roundCap,
       color: Colors.red,
       width: 10,
       polylineId: PolylineId('1'),
       points: [
-        LatLng(30.97674028818873, 31.174625298689165),
-        LatLng(31.047972600676886, 31.385088299514486),
-        LatLng(31.211262358602678, 29.94341404324599),
+        LatLng(-32.02961945494075, 21.048408992101184),
+        LatLng(72.27010316621475, -40.35172105700681),
       ],
     );
     polylines.add(polyline);
