@@ -58,6 +58,23 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
         // show error bar
       }
     }
+    checkAndRequestLocationPermission();
+  }
+
+  bool isPermissionGranted(PermissionStatus permissionStatus) =>
+      permissionStatus == PermissionStatus.granted;
+
+  void checkAndRequestLocationPermission() async {
+    var isPermissionEnabled =
+        isPermissionGranted(await location.hasPermission());
+
+    if (!isPermissionEnabled) {
+      isPermissionEnabled =
+          isPermissionGranted(await location.requestPermission());
+      if (!isPermissionEnabled) {
+        // show error bar
+      }
+    }
   }
 }
 
