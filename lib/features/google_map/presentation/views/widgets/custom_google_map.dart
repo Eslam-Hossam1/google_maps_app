@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_app/core/services/location_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -14,21 +15,18 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition cameraPosition;
   GoogleMapController? googleMapController;
   String? nightMapStyle;
-  late Location location;
+  late LocationService locationService;
   Set<Marker> markers = {};
+  bool isFirstLocationCall = true;
   @override
   void initState() {
     super.initState();
     cameraPosition = CameraPosition(
-      target: LatLng(
-        35.04093837052159,
-        35.379407510024834,
-      ),
-      zoom: 14,
+      target: LatLng(31.04093837052159, 31.379579171401787),
+      zoom: 1,
     );
     loadGoogleMapStyle();
-    location = Location();
-    checkAndRequestLocationService();
+    locationService = LocationService();
   }
 
   Future<void> loadGoogleMapStyle() async {
@@ -56,62 +54,51 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     );
   }
 
-  Future<void> checkAndRequestLocationService() async {
-    var isServiceEnabled = await location.serviceEnabled();
-    if (!isServiceEnabled) {
-      isServiceEnabled = await location.requestService();
-      if (!isServiceEnabled) {
-        // show error bar
-      }
-    }
-  }
-
-  bool isPermissionGranted(PermissionStatus permissionStatus) =>
-      permissionStatus == PermissionStatus.granted;
-
-  Future<bool> checkAndRequestLocationPermission() async {
-    var isPermissionEnabled =
-        isPermissionGranted(await location.hasPermission());
-
-    if (!isPermissionEnabled) {
-      isPermissionEnabled =
-          isPermissionGranted(await location.requestPermission());
-      if (!isPermissionEnabled) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   void checkPermissionThenListenToLocation() async {
-    await checkAndRequestLocationService();
-    bool hasPermission = await checkAndRequestLocationPermission();
+    await locationService.checkAndRequestLocationService();
+    bool hasPermission =
+        await locationService.checkAndRequestLocationPermission();
     if (hasPermission) {
-      listenToLocation();
+      locationService.listenToLiveLocationChanges(onLocationChanged);
     } else {}
   }
 
-  void listenToLocation() {
-    location.changeSettings(distanceFilter: 2);
-    location.onLocationChanged.listen((LocationData locationData) {
-      LatLng newLatLng = LatLng(
-        locationData.latitude!,
-        locationData.longitude!,
-      );
-      Marker newPostionMarker = Marker(
-        markerId: MarkerId(
-          'new_postion_marker',
+  void onLocationChanged(LocationData locationData) {
+    LatLng newLatLng = LatLng(
+      locationData.latitude!,
+      locationData.longitude!,
+    );
+    setNewLocationMarker(newLatLng);
+    animateCameraToNewLocation(newLatLng);
+  }
+
+  void animateCameraToNewLocation(LatLng newLatLng) {
+    if (isFirstLocationCall) {
+      isFirstLocationCall = false;
+      CameraPosition newCameraPostion =
+          CameraPosition(target: newLatLng, zoom: 15);
+      googleMapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          newCameraPostion,
         ),
-        position: newLatLng,
       );
-      markers.add(newPostionMarker);
-      setState(() {});
+    } else {
       googleMapController?.animateCamera(
         CameraUpdate.newLatLng(
           newLatLng,
         ),
       );
-    });
+    }
+  }
+
+  void setNewLocationMarker(LatLng newLatLng) {
+    markers = {
+      Marker(
+        markerId: const MarkerId('new_postion_marker'),
+        position: newLatLng,
+      ),
+    };
+    setState(() {});
   }
 }
 
