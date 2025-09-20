@@ -11,37 +11,43 @@ class LocationService {
   }
   StreamSubscription<LocationData>? _locationSubscription;
 
-  Future<bool> checkAndRequestLocationService() async {
+  Future<void> checkAndRequestLocationService() async {
     bool isServiceEnabled = await location.serviceEnabled();
     if (!isServiceEnabled) {
       isServiceEnabled = await location.requestService();
     }
-    return isServiceEnabled;
+    if (!isServiceEnabled) {
+      throw LocationServiceException();
+    }
   }
 
-  bool isPermissionGranted(PermissionStatus permissionStatus) =>
-      permissionStatus == PermissionStatus.granted;
-
-  Future<bool> checkAndRequestLocationPermission() async {
-    var isPermissionEnabled =
-        isPermissionGranted(await location.hasPermission());
-
-    if (!isPermissionEnabled) {
-      isPermissionEnabled =
-          isPermissionGranted(await location.requestPermission());
+  Future<void> checkAndRequestLocationPermission() async {
+    PermissionStatus permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.deniedForever) {
+      throw LocationPermissionException();
     }
-    return isPermissionEnabled;
+    if (permissionStatus != PermissionStatus.granted) {
+      permissionStatus = await location.requestPermission();
+    }
+    if (permissionStatus != PermissionStatus.granted) {
+      throw LocationPermissionException();
+    }
   }
 
   void listenToLiveLocationChanges(
     void Function(LocationData)? onData,
-  ) {
+  ) async {
     _locationSubscription?.cancel();
+    await checkAndRequestLocationService();
+    await checkAndRequestLocationPermission();
     _locationSubscription = location.onLocationChanged.listen(onData);
   }
 
   void dispose() {
     _locationSubscription?.cancel();
-    _locationSubscription = null;
   }
 }
+
+class LocationServiceException implements Exception {}
+
+class LocationPermissionException implements Exception {}

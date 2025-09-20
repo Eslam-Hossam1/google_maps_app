@@ -49,18 +49,9 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       initialCameraPosition: cameraPosition,
       onMapCreated: (controller) {
         googleMapController = controller;
-        checkPermissionThenListenToLocation();
+        locationService.listenToLiveLocationChanges(onLocationChanged);
       },
     );
-  }
-
-  void checkPermissionThenListenToLocation() async {
-    await locationService.checkAndRequestLocationService();
-    bool hasPermission =
-        await locationService.checkAndRequestLocationPermission();
-    if (hasPermission) {
-      locationService.listenToLiveLocationChanges(onLocationChanged);
-    } else {}
   }
 
   void onLocationChanged(LocationData locationData) {
