@@ -54,13 +54,21 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
 
   getLocationAndAnimateCamera() async {
-    LocationData locationData = await locationService.getLocationData();
-    LatLng newLatLng = LatLng(
-      locationData.latitude!,
-      locationData.longitude!,
-    );
-    setLocationMarker(newLatLng);
-    animateCameraToLocation(newLatLng);
+    try {
+      LocationData locationData = await locationService.getLocationData();
+      LatLng newLatLng = LatLng(
+        locationData.latitude!,
+        locationData.longitude!,
+      );
+      setLocationMarker(newLatLng);
+      animateCameraToLocation(newLatLng);
+    } on LocationPermissionException catch (e) {
+      // TODO
+    } on LocationPermissionException catch (e) {
+      // TODO
+    } on Exception catch (e) {
+      // TODO
+    }
   }
 
   void animateCameraToLocation(LatLng newLatLng) {
