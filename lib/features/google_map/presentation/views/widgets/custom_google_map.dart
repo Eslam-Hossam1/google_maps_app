@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_maps_app/core/services/location_service.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:ui' as ui;
+import 'package:location/location.dart';
 
 class CustomGoogleMap extends StatefulWidget {
   const CustomGoogleMap({super.key});
@@ -12,35 +13,20 @@ class CustomGoogleMap extends StatefulWidget {
 
 class _CustomGoogleMapState extends State<CustomGoogleMap> {
   late CameraPosition cameraPosition;
-  late GoogleMapController googleMapController;
+  GoogleMapController? googleMapController;
   String? nightMapStyle;
+  late LocationService locationService;
   Set<Marker> markers = {};
-  Set<Circle> circles = {};
-
+  bool isFirstLocationCall = true;
   @override
   void initState() {
     super.initState();
     cameraPosition = CameraPosition(
-      target: LatLng(
-        31.04093837052159,
-        31.379407510024834,
-      ),
-      zoom: 14,
+      target: LatLng(31.04093837052159, 31.379579171401787),
+      zoom: 1,
     );
-    initMarkers();
-    initCircles();
     loadGoogleMapStyle();
-  }
-
-  void initCircles() {
-    Circle pizzaMaxServingCircle = Circle(
-        strokeWidth: 3,
-        fillColor: Colors.pink.withAlpha(50),
-        strokeColor: Colors.cyan,
-        circleId: CircleId('1'),
-        center: LatLng(31.054193594779825, 31.40331839496111),
-        radius: 800);
-    circles.add(pizzaMaxServingCircle);
+    locationService = LocationService();
   }
 
   Future<void> loadGoogleMapStyle() async {
@@ -49,35 +35,65 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     setState(() {});
   }
 
-  
-  initMarkers() async {
-    BitmapDescriptor icon = await BitmapDescriptor.asset(
-      ImageConfiguration(),
-      'assets/images/flag.png',
-    );
-    Marker pizzaMaxMarker = Marker(
-      icon: icon,
-      markerId: MarkerId('1'),
-      position: LatLng(31.054193594779825, 31.40331839496111),
-    );
-
-    markers.add(pizzaMaxMarker);
-    setState(() {});
-  }
-
   @override
   void dispose() {
     super.dispose();
-    googleMapController.dispose();
+    googleMapController?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
       markers: markers,
-      circles: circles,
       style: nightMapStyle,
       initialCameraPosition: cameraPosition,
+      onMapCreated: (controller) {
+        googleMapController = controller;
+        locationService.listenToLiveLocationChanges(onLocationChanged);
+      },
     );
   }
+
+  void onLocationChanged(LocationData locationData) {
+    LatLng newLatLng = LatLng(
+      locationData.latitude!,
+      locationData.longitude!,
+    );
+    setNewLocationMarker(newLatLng);
+    animateCameraToNewLocation(newLatLng);
+  }
+
+  void animateCameraToNewLocation(LatLng newLatLng) {
+    if (isFirstLocationCall) {
+      isFirstLocationCall = false;
+      CameraPosition newCameraPostion =
+          CameraPosition(target: newLatLng, zoom: 15);
+      googleMapController?.animateCamera(
+        CameraUpdate.newCameraPosition(
+          newCameraPostion,
+        ),
+      );
+    } else {
+      googleMapController?.animateCamera(
+        CameraUpdate.newLatLng(
+          newLatLng,
+        ),
+      );
+    }
+  }
+
+  void setNewLocationMarker(LatLng newLatLng) {
+    markers = {
+      Marker(
+        markerId: const MarkerId('new_postion_marker'),
+        position: newLatLng,
+      ),
+    };
+    setState(() {});
+  }
 }
+
+// inquire about location service 
+// rquestlocation permission
+// getlocation
+// display
