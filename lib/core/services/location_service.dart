@@ -43,6 +43,13 @@ class LocationService {
     _locationSubscription = location.onLocationChanged.listen(onData);
   }
 
+  Future<LocationData> getLocationData() async {
+    await checkAndRequestLocationService();
+    await checkAndRequestLocationPermission();
+    LocationData locationData = await location.getLocation();
+    return locationData;
+  }
+
   void dispose() {
     _locationSubscription?.cancel();
   }
