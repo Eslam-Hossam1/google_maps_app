@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_app/core/services/location_service.dart';
+import 'package:google_maps_app/features/google_map/presentation/views/widgets/search_location_section/search_location_section.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 
@@ -42,14 +43,19 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      markers: markers,
-      style: nightMapStyle,
-      initialCameraPosition: cameraPosition,
-      onMapCreated: (controller) {
-        googleMapController = controller;
-        getLocationAndAnimateCamera();
-      },
+    return Stack(
+      children: [
+        GoogleMap(
+          markers: markers,
+          style: nightMapStyle,
+          initialCameraPosition: cameraPosition,
+          onMapCreated: (controller) {
+            googleMapController = controller;
+            getLocationAndAnimateCamera();
+          },
+        ),
+        SearchLocationSection(),
+      ],
     );
   }
 
@@ -62,8 +68,6 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
       );
       setLocationMarker(newLatLng);
       animateCameraToLocation(newLatLng);
-    } on LocationPermissionException catch (e) {
-      // TODO
     } on LocationPermissionException catch (e) {
       // TODO
     } on Exception catch (e) {
@@ -91,8 +95,6 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
     setState(() {});
   }
 }
-
-  
 
 // inquire about location service 
 // rquestlocation permission
