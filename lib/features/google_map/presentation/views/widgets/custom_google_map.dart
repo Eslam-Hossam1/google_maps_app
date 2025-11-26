@@ -96,7 +96,7 @@ class _CustomGoogleMapState extends State<CustomGoogleMap> {
   }
 }
 
-// inquire about location service 
+// inquire about location service
 // rquestlocation permission
 // getlocation
 // display
