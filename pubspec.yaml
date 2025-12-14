@@ -32,7 +32,9 @@ dependencies:
   dio: ^5.9.0
   flutter:
     sdk: flutter
+  geocoding: ^4.0.0
   google_maps_flutter: ^2.12.3
+  http: ^1.6.0
   location: ^8.0.1
   pretty_dio_logger: ^1.4.0
 

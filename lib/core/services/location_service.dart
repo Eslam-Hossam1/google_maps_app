@@ -26,7 +26,7 @@ class LocationService {
     if (permissionStatus == PermissionStatus.deniedForever) {
       throw LocationPermissionException();
     }
-    if (permissionStatus != PermissionStatus.granted) {
+    if (permissionStatus != PermissionStatus.granted) { 
       permissionStatus = await location.requestPermission();
     }
     if (permissionStatus != PermissionStatus.granted) {
